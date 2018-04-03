@@ -1,0 +1,145 @@
+<!-- Documentation: https://www.mapbox.com/mapbox-gl-js/style-spec/#sources-geojson -->
+<!-- Mapbox styles: https://github.com/mapbox/mapbox-gl-styles -->
+<!-- Earthquake data: https://earthquake.usgs.gov/ -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+  <title> Sakura </title>
+  <script src='https://api.mapbox.com/mapbox-gl-js/v0.40.1/mapbox-gl.js'></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <link href='https://api.mapbox.com/mapbox-gl-js/v0.40.1/mapbox-gl.css' rel='stylesheet' />
+</head>
+
+<body>
+  <style>
+    .marker {
+      display: block;
+      border-style: solid;
+      border-width: 5px;
+      border-color: #EE8182;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .marker:hover {
+      border-color: #B21262;
+
+    }
+
+
+    .mapboxgl-popup {
+      max-width: 200px;
+    }
+
+    .mapboxgl-popup h1 {
+      color: #B21262;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .mapboxgl-popup p {
+      color: #000000;
+      text-align: center;
+      font-size: 10px;
+    }
+  </style>
+  <div id="map"> </div>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWVuZ3poZW54aWFvIiwiYSI6ImNqZjl2Z21uZjAyMTgyem1zejl0cnk4cWIifQ.BtuitveS1wMnaxZ0qUe5mw';
+
+    var map = new mapboxgl.Map({
+      container: 'map', // you need this
+      style: 'mapbox://styles/mapbox/basic-v9', // you also need this
+      center: [139.731937, 35.709086], // [long, lat] Different than leaflet, different than google maps, same as geojson!
+      zoom: 8,
+    });
+
+
+    // Source is where the data is coming from, layer is what you're going to do with it.
+    // map.on('load', function() {
+    //     map.addSource('dataname', {//this is what we call the data
+    //         type: 'geojson',
+    //         data: '/data/sakura_viewpoints.geojson'
+    //     });
+    // map.addLayer({
+    //   'id' : 'dataname',//same as when we added the soure to line 44
+    //   'type': 'circle',
+    //   'source':'dataname',//the name of the data
+    //   'paint':{
+    //     'circle-radius':{
+    //       //make the circles larger as the user zooms from 12 to 22
+    //       'base':5,
+    //       'stops':[[12,7],[22,200]]
+    //     }
+    //   }
+    // })
+    // });
+
+
+
+    //add markers
+    $.ajax({
+      dataType: "json",
+      url: "data/sakura_viewpoints.geojson",
+      success: function(dataname) {
+
+        dataname.features.forEach(function(marker) {
+          // create a DOM element for the marker
+          var el = document.createElement('div');
+          el.className = 'marker';
+
+          el.style.backgroundImage = 'url(' + marker.properties.img + ')';
+          // el.style.backgroundImage = marker.properties.img;
+          el.style.width = '60px';
+          el.style.height = '60px';
+
+          //
+          // el.addEventListener('click', function() {
+          //     window.alert(marker.properties.place);
+          // });
+
+          // create the popup
+          var popup = new mapboxgl.Popup()
+            .setHTML('<h1>' + marker.properties.place + '</h1><p>' + marker.properties.time + '</p>');
+
+          // add marker to map
+          new mapboxgl.Marker(el)
+            .setLngLat(marker.geometry.coordinates)
+            .setPopup(popup) // sets a popup on this marker
+            .addTo(map);
+        });
+
+
+        //add slider
+        
+
+
+
+
+
+
+      }//ajax success end
+    }).error(function() {});
+  </script>
+</body>
+
+</html>
