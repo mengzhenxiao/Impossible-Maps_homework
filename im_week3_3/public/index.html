@@ -1,0 +1,239 @@
+<!-- Documentation: https://www.mapbox.com/mapbox-gl-js/style-spec/#sources-geojson -->
+<!-- Mapbox styles: https://github.com/mapbox/mapbox-gl-styles -->
+<!-- Earthquake data: https://earthquake.usgs.gov/ -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+  <title>Sakura</title>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+  <link href="https://fonts.googleapis.com/css?family=Chivo" rel="stylesheet">
+</head>
+
+<body>
+  <style>
+    .filter-group {
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      font-weight: 600;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1;
+      border-radius: 3px;
+      width: 120px;
+      color: #fff;
+    }
+
+    .filter-group input[type=checkbox]:first-child+label {
+      border-radius: 3px 3px 0 0;
+    }
+
+    .filter-group label:last-child {
+      border-radius: 0 0 3px 3px;
+      border: none;
+    }
+
+    .filter-group input[type=checkbox] {
+      display: none;
+    }
+
+    .filter-group input[type=checkbox]+label {
+      background-color: #FC4788;
+      display: block;
+      cursor: pointer;
+      padding: 10px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    }
+
+    .filter-group input[type=checkbox]+label {
+      background-color: #FC4788;
+      text-transform: capitalize;
+    }
+
+    .filter-group input[type=checkbox]+label:hover,
+    .filter-group input[type=checkbox]:checked+label {
+      background-color: rgba(252, 70, 136, 0.8);
+    }
+
+    .filter-group input[type=checkbox]:checked+label:before {
+      content: '✔  ';
+      margin-right: 10px;
+    }
+
+    .marker {
+      display: block;
+      border-style: solid;
+      border-width: 5px;
+      border-color: #EE8182;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .marker:hover {
+      border-color: #B21262;
+
+    }
+
+
+    .mapboxgl-popup {
+      max-width: 200px;
+    }
+
+    .mapboxgl-popup h1 {
+      color: #B21262;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    .mapboxgl-popup p {
+      color: #000000;
+      text-align: center;
+      font-size: 10px;
+    }
+  </style>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.css' type='text/css' />
+  <div id='map'></div>
+  <nav id='filter-group' class='filter-group'></nav>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaGFmaXl5YW5kaSIsImEiOiJjamY5dmY1c2gwbXowMnFvZmJlYmVibGd0In0.djzLVWymjTzvRF6XSFM7uQ';
+    var filterGroup = document.getElementById('filter-group');
+
+    var map = new mapboxgl.Map({
+      container: 'map', // you need this
+      style: 'mapbox://styles/mapbox/basic-v9', // you also need this
+      center: [137.913539, 37.634859], // [long, lat] Different than leaflet, different than google maps, same as geojson!
+      zoom: 5
+    });
+
+
+
+
+    // Source is where the data is coming from, layer is what you're going to do with it.
+    $.ajax({
+      dataType: "json",
+      url: "data/sakura.json",
+      success: function(dataname) {
+
+        map.on('load', function() {
+          // Add a GeoJSON source containing place coordinates and information.
+          map.addSource("dataname", {
+            "type": "geojson",
+            "data": dataname
+          });
+
+          dataname.features.forEach(function(feature) {
+            var symbol = feature.properties['time'];
+            var layerID = symbol;
+            if (!map.getLayer(layerID)) {
+              map.addLayer({
+                'id': layerID,
+                'type': 'circle',
+                'source': 'dataname',
+                'paint': {
+                  // make circles larger as the user zooms from z12 to z22
+                  'circle-radius': {
+                    'base': 8,
+                    'stops': [
+                      [7, 8],
+                      [20, 180]
+                    ]
+                  },
+                  'circle-color': '#FC4788',
+                  'circle-opacity': 0.6
+                },
+                "filter": ["==", 'time', symbol]
+              });
+
+              // Add checkbox and label elements for the layer.
+              var input = document.createElement('input');
+              input.type = 'checkbox';
+              input.id = layerID;
+              input.checked = true;
+              filterGroup.appendChild(input);
+
+              var label = document.createElement('label');
+              label.setAttribute('for', layerID);
+              label.textContent = symbol;
+              filterGroup.appendChild(label);
+
+              // When the checkbox changes, update the visibility of the layer.
+              input.addEventListener('change', function(e) {
+                map.setLayoutProperty(layerID, 'visibility',
+                  e.target.checked ? 'visible' : 'none');
+              });
+
+              // Change the cursor to a pointer when the mouse is over the places layer.
+              map.on('mouseenter', layerID, function() {
+                map.getCanvas().style.cursor = 'pointer';
+              });
+
+              // Change it back to a pointer when it leaves.
+              map.on('mouseleave', layerID, function() {
+                map.getCanvas().style.cursor = '';
+              });
+
+
+
+
+
+
+            }
+          });
+        });
+
+
+        map.on('click', function(e) {
+          var features = map.queryRenderedFeatures(e.point);
+          // console.log(features);
+
+          var el = document.createElement('div');
+          el.className = 'marker';
+
+          el.style.backgroundImage = 'url(' + features[0].properties.img + ')';
+          // el.style.backgroundImage = marker.properties.img;
+          el.style.width = '60px';
+          el.style.height = '60px';
+
+          var popup = new mapboxgl.Popup()
+            .setHTML('<h1>' + features[0].properties.place + '</h1><p>' + features[0].properties.time + '</p>');
+
+          // add marker to map
+          new mapboxgl.Marker(el)
+            .setLngLat(features[0].geometry.coordinates)
+            .setPopup(popup) // sets a popup on this marker
+            .addTo(map);
+
+
+        });
+
+      } //ajax success end
+    }).error(function() {});
+
+    map.addControl(new MapboxDirections({
+      accessToken: mapboxgl.accessToken
+    }), 'top-left');
+  </script>
+</body>
+
+</html>

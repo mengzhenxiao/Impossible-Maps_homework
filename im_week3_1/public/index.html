@@ -1,0 +1,324 @@
+<!-- Documentation: https://www.mapbox.com/mapbox-gl-js/style-spec/#sources-geojson -->
+<!-- Mapbox styles: https://github.com/mapbox/mapbox-gl-styles -->
+<!-- Earthquake data: https://earthquake.usgs.gov/ -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+  <title>Death Map</title>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+  <link href="https://fonts.googleapis.com/css?family=Chivo" rel="stylesheet">
+</head>
+
+<body>
+  <style>
+    .map-overlay {
+      font: 12px/20px 'Chivo', sans-serif;
+      position: absolute;
+      width: 25%;
+      top: 0;
+      left: 0;
+      padding: 10px;
+      letter-spacing: 1px;
+    }
+
+    .map-overlay .map-overlay-inner {
+      background-color: #000;
+      color: #eee;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+      border-radius: 0px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .map-overlay h2 {
+      line-height: 18px;
+      display: block;
+      margin: 0 0 10px;
+    }
+
+    .map-overlay .legend h3 {
+      line-height: 15px;
+      display: block;
+      margin: 0 0 0 0;
+    }
+
+    .map-overlay.top .map-overlay-inner h3#date {
+      margin-bottom: 0;
+      color: #fef135;
+    }
+
+    .map-overlay .legend .bar {
+      height: 10px;
+      width: 100%;
+      background: linear-gradient(to right, #fef135, #fc191c);
+      margin-bottom: 5px;
+      margin-top: 5px;
+    }
+
+    .map-overlay .whitebar {
+      height: 2px;
+      width: 10%;
+      background: #eee;
+      margin-bottom: 0;
+      margin-top: 15px;
+    }
+
+    .whitebar {
+      height: 2px;
+      width: 10%;
+      background: #eee;
+      margin-bottom: 10px;
+      margin-top: 10px;
+    }
+
+    .map-overlay .legend .blue {
+      height: 20px;
+      width: 20px;
+      background: #FC4788;
+      /*background-color: #bbb;*/
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .map-overlay input {
+      background-color: transparent;
+      display: inline-block;
+      width: 100%;
+      position: relative;
+      margin: 0;
+      cursor: ew-resize;
+    }
+
+    .mapboxgl-popup {
+      color: #eee;
+      max-width: 400px;
+      font: 12px/20px 'Chivo', sans-serif;
+    }
+
+    .mapboxgl-popup-content {
+      background-color: #000;
+      letter-spacing: 1px;
+      line-height: 1.5;
+      border-radius: 0;
+      padding: 10px;
+    }
+
+    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+      border-top-color: #000;
+    }
+
+    .mapboxgl-popup-close-button {
+      color: #fff;
+    }
+
+    #slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 5px;
+      border-radius: 0px;
+      background: #999;
+      outline: none;
+      opacity: 1;
+      -webkit-transition: .2s;
+      transition: opacity .2s;
+    }
+
+    #slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    #slider::-moz-range-thumb {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+    }
+  </style>
+
+  <div id='map'></div>
+<nav id='filter-group' class='filter-group'></nav>
+
+
+  <script src='//d3js.org/d3.v3.min.js' charset='utf-8'></script>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaGFmaXl5YW5kaSIsImEiOiJjamY5dmY1c2gwbXowMnFvZmJlYmVibGd0In0.djzLVWymjTzvRF6XSFM7uQ';
+    var map = new mapboxgl.Map({
+      container: 'map', // you need this
+      style: 'mapbox://styles/mapbox/basic-v9', // you also need this
+      center: [139.731937, 35.709086], // [long, lat] Different than leaflet, different than google maps, same as geojson!
+      zoom: 7
+    });
+
+    var months = [
+      'March',
+      'April',
+      'May'
+    ];
+
+    function filterBy(month) {
+
+      var filters = ['==', 'time', month];
+      map.setFilter('places', filters);
+
+      //Set the label to the month
+      document.getElementById('time').textContent = months[month];
+    }
+
+
+
+
+
+
+
+    // Source is where the data is coming from, layer is what you're going to do with it.
+    map.on('load', function() {
+
+      d3.json('data/sakura.json', function(err, data) {
+        if (err) throw err;
+
+
+        data.features = data.features.map(function(d) {
+          d.properties.time = new Date(d.properties.time).getMonth();
+          return d;
+        });
+
+
+
+
+        map.addSource('data', { //id for the dataset
+          'type': 'geojson',
+          'data': data
+        });
+
+        // map.addLayer({
+        //     'id': 'killings',
+        //     'type': 'circle',
+        //     'source' : 'killings',
+        //     'paint' : {
+        //         'circle-radius' : {
+        //                 'property': 'killcount',
+        //                 'stops' : [
+        //                     [100, 20],
+        //                     [550, 75]
+        //                 ]
+        //         },
+        //         'circle-color' : {
+        //             'property': 'killcount',
+        //             'stops' : [
+        //                 [100, 'yellow'],
+        //                 [550, 'red']
+        //             ]
+        //         },
+        //         'circle-opacity': 0.5
+        //     }
+        //
+        // });
+        map.addLayer({
+          'id': 'places',
+          'type': 'circle',
+          'source': 'data',
+          'paint': {
+            // make circles larger as the user zooms from z12 to z22
+            'circle-radius': {
+              'base': 8,
+              'stops': [
+                [7, 8],
+                [20, 180]
+              ]
+            },
+            'circle-color': '#FC4788',
+            'circle-opacity': 0.8
+          }
+
+        });
+
+        filterBy(0);
+
+        document.getElementById('slider').addEventListener('input', function(e) {
+          var time = parseInt(e.target.value, 10);
+          filterBy(time);
+        });
+      });
+    });
+    // When a click event occurs near a place, open a popup at the location of
+    // the feature, with HTML description from its properties
+    // map.on('click', function(e) {
+    //     if (currentdate == 15) {
+    //         var features = map.queryRenderedFeatures(e.point, { layers: ['final'] });
+    //         // if the features have no info, return nothing
+    //         if (!features.length) {
+    //             return;
+    //         }
+    //         var feature = features[0];
+    //         // Populate the popup and set its coordinates
+    //         // based on the feature found
+    //         var popup = new mapboxgl.Popup()
+    //           .setLngLat(feature.geometry.coordinates)
+    //           .setHTML('<div id=\'popup\' class=\'popup\' style=\'z-index: 10;\'> ' +
+    //           'Town: ' + feature.properties['city'] + ' <br/>' +
+    //           'Region: ' + feature.properties['region'] + ' <br/>' +
+    //           '<div class=\'whitebar\'></div>  ' +
+    //           'Djuarsa Visit: October ' + feature.properties['visit'] + ' <br/>' +
+    //           'Killing Start: October ' + feature.properties['start'] + ' <br/>' +
+    //           'Death Count: ' + feature.properties['killcount'] + ' </div>')
+    //           .addTo(map);
+    //     }
+    // });
+    // // Use the same approach as above to indicate that the symbols are clickable
+    // // by changing the cursor style to 'pointer'
+    // map.on('mousemove', function(e) {
+    //     if (currentdate == 15) {
+    //         var features = map.queryRenderedFeatures(e.point, { layers: ['final'] });
+    //         map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+    //     }
+    //
+    // });
+    // function animateMarker(timestamp) {
+    //     setTimeout(function(){
+    //         requestAnimationFrame(animateMarker);
+    //         radius += (maxRadius - radius) / framesPerSecond;
+    //         opacity -= ( .9 / framesPerSecond );
+    //         opacity = Math.min(Math.max(opacity, 0), 1);
+    //         map.setPaintProperty('killings', 'circle-radius', radius);
+    //         map.setPaintProperty('killings', 'circle-opacity', opacity);
+    //         if (opacity <= 0) {
+    //             radius = initialRadius;
+    //             opacity = initialOpacity;
+    //         }
+    //     }, 1000 / framesPerSecond);
+    //
+    // }
+    // document.getElementById('slider').addEventListener('input', function(e) {
+    //     var date = parseInt(e.target.value, 10);
+    //     filterBy(date);
+    // });
+  </script>
+</body>
+
+</html>
