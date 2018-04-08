@@ -7,4 +7,4 @@ app.listen(8000, function () {
   console.log('Example app listening on port 8000!')
 })
 
-app.use('/im_week2',express.static('public'));
+app.use('/im_week3',express.static('public'));
