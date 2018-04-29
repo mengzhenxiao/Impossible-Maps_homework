@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    #map {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+  <title>Mengzhen's Photo Map</title>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+  <link href="https://fonts.googleapis.com/css?family=Chivo" rel="stylesheet">
+</head>
+
+<body>
+  <style>
+    /* time filter */
+
+    .map-overlay {
+      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      position: absolute;
+      width: 25%;
+      top: 0;
+      left: 0;
+      padding: 10px;
+    }
+
+    .map-overlay .map-overlay-inner {
+      background-color: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
+      border-radius: 3px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .map-overlay h2 {
+      line-height: 24px;
+      display: block;
+      margin: 0 0 10px;
+    }
+
+    .map-overlay .legend .bar {
+      height: 10px;
+      width: 100%;
+      background: linear-gradient(to right, #FCA107, #7F3121);
+    }
+
+    .map-overlay input {
+      background-color: transparent;
+      display: inline-block;
+      width: 100%;
+      position: relative;
+      margin: 0;
+      cursor: ew-resize;
+    }
+  </style>
+  <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.js'></script>
+  <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.css' type='text/css' />
+  <div id='map'></div>
+
+
+  <div class='map-overlay top'>
+    <div class='map-overlay-inner'>
+      <h2>Significant earthquakes in 2015</h2>
+      <label id='month'></label>
+      <input id='slider' type='range' min='0' max='11' step='1' value='0' />
+    </div>
+    <div class='map-overlay-inner'>
+      <div id='legend' class='legend'>
+        <div class='bar'></div>
+        <div>Magnitude (m)</div>
+      </div>
+    </div>
+  </div>
+
+  <script src='//d3js.org/d3.v3.min.js' charset='utf-8'></script>
+
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaGFmaXl5YW5kaSIsImEiOiJjamY5dmY1c2gwbXowMnFvZmJlYmVibGd0In0.djzLVWymjTzvRF6XSFM7uQ';
+    var filterGroup = document.getElementById('filter-group');
+
+    var map = new mapboxgl.Map({
+      container: 'map', // you need this
+      style: 'mapbox://styles/mapbox/dark-v9', // you also need this
+      center: [-74.012542, 40.730212], // [long, lat] Different than leaflet, different than google maps, same as geojson!
+      zoom: 13
+    });
+
+    var months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+
+    function filterBy(month) {
+
+      var filters = ['==', 'month', month];
+      map.setFilter('allcircles', filters);
+
+      // Set the label to the month
+      document.getElementById('month').textContent = months[month];
+    }
+
+
+
+    // Source is where the data is coming from, layer is what you're going to do with it.
+
+
+            map.on('load', function() {
+
+                d3.json('data.geojson', function(err, data) {
+                  if (err) throw err;
+
+                  // Create a month property value based on time
+                  // used to filter against.
+                  data.features = data.features.map(function(d) {
+                    d.properties.month = new Date(d.properties.DATEF).getMonth();
+                    return d;
+                  });
+
+
+
+                  // Add a GeoJSON source containing place coordinates and information.
+                  map.addSource("dataname", {
+                    "type": "geojson",
+                    "data": data
+                  });
+
+                  map.addLayer({
+                    'id': 'allcircles',
+                    'type': 'circle',
+                    'source': 'dataname',
+                    'paint': {
+                      'circle-radius': 2,
+                      'circle-color': "yellow",
+                      'circle-opacity': 0.3
+                    }
+                  });
+
+                  filterBy(0);
+
+                  document.getElementById('slider').addEventListener('input', function(e) {
+                    var month = parseInt(e.target.value, 10);
+                    filterBy(month);
+                  });
+
+                });
+                  });
+
+  </script>
+</body>
+
+</html>
