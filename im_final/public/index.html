@@ -10,13 +10,29 @@
 
     html,
     #map {
-      position: absolute;
+      position: fixed;
       top: 0;
+      left:0;
       bottom: 0;
-      width: 100%;
+      width: 75%;
     }
+
+    .introduction{
+      position: fixed;
+      z-index: 2;
+      background-color: #fff;
+      top: 0;
+      right:0;
+      bottom: 0;
+      width: 25%;
+      height: 100%;
+      overflow:scroll;
+      padding: 25px;
+      color:#000;
+    }
+
   </style>
-  <title>Mengzhen's Photo Map</title>
+  <title>NYC Motor Vehicle Collisions In 2017</title>
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
 <script src='https://momentjs.com/downloads/moment.js'></script>
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -30,15 +46,16 @@
 
     .map-overlay {
       font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      color:#fff;
       position: absolute;
-      width: 25%;
+      width: 20%;
       top: 0;
       left: 0;
       padding: 10px;
     }
 
     .map-overlay .map-overlay-inner {
-      background-color: #fff;
+      background-color: #000000;
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
       border-radius: 3px;
       padding: 10px;
@@ -46,6 +63,7 @@
     }
 
     .map-overlay h2 {
+      color:#fff;
       line-height: 24px;
       display: block;
       margin: 0 0 10px;
@@ -54,7 +72,7 @@
     .map-overlay .legend .bar {
       height: 10px;
       width: 100%;
-      background: linear-gradient(to right, #FCA107, #7F3121);
+      background: linear-gradient(to right, #ffeda0, #e34a33);
     }
 
     .map-overlay input {
@@ -68,6 +86,17 @@
   </style>
   <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.js'></script>
   <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.css' type='text/css' />
+<div class="introduction">
+   <h1>NYC Motor Vehicle Collisions In 2017</h1>
+   <br>
+   <p>This is a breakdown of every collision in NYC by location and injury.
+     Each record represents a collision in NYC by city, borough, precinct and cross street.
+   </p>
+</div>
+
+
+
+
   <div id='map'></div>
 
 
@@ -87,14 +116,14 @@
 
   <div class='map-overlay top'>
     <div class='map-overlay-inner'>
-      <h2>Significant earthquakes in 2015</h2>
+      <h2>Time</h2>
       <label id='time'></label>
       <input id='slider2' type='range' min='0' max='23' step='1' value='0' />
     </div>
     <div class='map-overlay-inner'>
       <div id='legend' class='legend'>
         <div class='bar'></div>
-        <div>Magnitude (m)</div>
+        <div>Number of Persons Injured</div>
       </div>
     </div>
   </div>
@@ -164,7 +193,7 @@
 //filter by time
       var filters = ['==', 'time', time];
       map.setFilter('allcircles', filters);
-      document.getElementById('time').textContent = times[time];
+      document.getElementById('time').textContent = times[time]+":00";
     }
 
 
