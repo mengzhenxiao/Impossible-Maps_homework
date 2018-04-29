@@ -33,7 +33,7 @@
   </style>
   <title>NYC Motor Vehicle Collisions In 2017</title>
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
-  <script src='https://momentjs.com/downloads/moment.js'></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
   <link href="https://fonts.googleapis.com/css?family=Chivo" rel="stylesheet">
@@ -68,6 +68,13 @@
       margin: 0 0 10px;
     }
 
+    .map-overlay p {
+      color: #fff;
+      line-height: 18px;
+      display: block;
+      margin: 0 0 10px;
+    }
+
     .map-overlay .legend .bar {
       height: 10px;
       width: 100%;
@@ -81,6 +88,16 @@
       position: relative;
       margin: 0;
       cursor: ew-resize;
+    }
+
+    #details1{
+     color: #ffeda0;
+     font-size: 20px;
+    }
+
+    #details2{
+     color: #e34a33;
+     font-size: 20px;
     }
   </style>
   <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.js'></script>
@@ -124,7 +141,14 @@
         <div>Number of Persons Injured</div>
       </div>
     </div>
+    <div class="map-overlay-inner">
+      <h2>Details</h2>
+      <div id="details1"></div>
+      <div id="details2"></div>
+      <div id="details3"></div>
+    </div>
   </div>
+
 
   <script src='//d3js.org/d3.v3.min.js' charset='utf-8'></script>
 
@@ -234,19 +258,19 @@
           'paint': {
             'circle-radius': [
               'interpolate', ['linear'],
-              ['get', 'NUMBER OF PERSONS INJURED'],
-              0, 1.5,
+              ['get', 'NUMBER_OF_PERSONS_INJURED'],
+              0, 2,
               27, 40
             ],
             'circle-color': [
               'interpolate', ['linear'],
-              ['get', 'NUMBER OF PERSONS INJURED'],
+              ['get', 'NUMBER_OF_PERSONS_INJURED'],
               0, '#ffeda0',
               10, '#e34a33'
             ],
             'circle-opacity': [
               'interpolate', ['linear'],
-              ['get', 'NUMBER OF PERSONS INJURED'],
+              ['get', 'NUMBER_OF_PERSONS_INJURED'],
               0, 0.5,
               3, 1
             ]
@@ -280,19 +304,19 @@
           'paint': {
             'circle-radius': [
               'interpolate', ['linear'],
-              ['get', 'NUMBER OF PERSONS INJURED'],
+              ['get', 'NUMBER_OF_PERSONS_INJURED'],
               0, 1.5,
               27, 40
             ],
             'circle-color': [
               'interpolate', ['linear'],
-              ['get', 'NUMBER OF PERSONS INJURED'],
+              ['get', 'NUMBER_OF_PERSONS_INJURED'],
               0, '#ffeda0',
               10, '#e34a33'
             ],
             'circle-opacity': [
               'interpolate', ['linear'],
-              ['get', 'NUMBER OF PERSONS INJURED'],
+              ['get', 'NUMBER_OF_PERSONS_INJURED'],
               0, 0.5,
               3, 1
             ],
@@ -306,12 +330,24 @@
         map.on("mousemove", "allcircles", function(e) {
           map.getCanvas().style.cursor = 'pointer';
           map.setFilter("allcircles-hover", ["==", "name", e.features[0].properties.name]);
+          if(e.features[0].properties.NUMBER_OF_PERSONS_INJURED!=0){
+            $( "#details1").html(e.features[0].properties.NUMBER_OF_PERSONS_INJURED+"  Injured");}
+          if(e.features[0].properties.NUMBER_OF_PERSONS_KILLED!=0){
+            $( "#details2").html(e.features[0].properties.NUMBER_OF_PERSONS_KILLED+"  Killed");
+          }
+
+          $( "#details3").html("<br><p>Time: "+e.features[0].properties.DATEF+"</p><p>On Street Name: "+e.features[0].properties.ON_STREET_NAME+"</p><p>Cross Street Name: "
+          +e.features[0].properties.CROSS_STREET_NAME+"</p><p>Off Street Name: "+e.features[0].properties.OFF_STREET_NAME);
+
         });
 
         // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
         map.on("mouseleave", "allcircles", function() {
           map.getCanvas().style.cursor = '';
           map.setFilter("allcircles-hover", ["==", "name", ""]);
+          $( "#details1").html("");
+          $( "#details2").html("");
+          $( "#details3").html("");
         });
 
 
