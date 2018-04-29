@@ -109,8 +109,8 @@
     var map = new mapboxgl.Map({
       container: 'map', // you need this
       style: 'mapbox://styles/mapbox/dark-v9', // you also need this
-      center: [-74.012542, 40.730212], // [long, lat] Different than leaflet, different than google maps, same as geojson!
-      zoom: 13
+      center: [-73.977725, 40.760219], // [long, lat] Different than leaflet, different than google maps, same as geojson!
+      zoom: 12
     });
 
     var months = [
@@ -170,8 +170,6 @@
 
 
     // Source is where the data is coming from, layer is what you're going to do with it.
-
-
     map.on('load', function() {
 
       d3.json('data.geojson', function(err, data) {
@@ -207,9 +205,27 @@
           'type': 'circle',
           'source': 'dataname',
           'paint': {
-            'circle-radius': 3,
-            'circle-color': "yellow",
-            'circle-opacity': 0.3
+            'circle-radius': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'NUMBER OF PERSONS INJURED'],
+                    0, 1.5,
+                    27, 40
+                ],
+            'circle-color': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'NUMBER OF PERSONS INJURED'],
+                    0, '#ffeda0',
+                    10, '#e34a33'
+                ],
+            'circle-opacity': [
+                    'interpolate',
+                    ['linear'],
+                    ['get', 'NUMBER OF PERSONS INJURED'],
+                    0, 0.5,
+                    3, 1
+                ]
           }
         });
 
