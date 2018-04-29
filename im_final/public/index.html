@@ -12,29 +12,28 @@
     #map {
       position: fixed;
       top: 0;
-      left:0;
+      left: 0;
       bottom: 0;
       width: 75%;
     }
 
-    .introduction{
+    .introduction {
       position: fixed;
       z-index: 2;
       background-color: #fff;
       top: 0;
-      right:0;
+      right: 0;
       bottom: 0;
       width: 25%;
       height: 100%;
-      overflow:scroll;
+      overflow: scroll;
       padding: 25px;
-      color:#000;
+      color: #000;
     }
-
   </style>
   <title>NYC Motor Vehicle Collisions In 2017</title>
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
-<script src='https://momentjs.com/downloads/moment.js'></script>
+  <script src='https://momentjs.com/downloads/moment.js'></script>
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
   <link href="https://fonts.googleapis.com/css?family=Chivo" rel="stylesheet">
@@ -46,7 +45,7 @@
 
     .map-overlay {
       font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
-      color:#fff;
+      color: #fff;
       position: absolute;
       width: 20%;
       top: 0;
@@ -55,7 +54,7 @@
     }
 
     .map-overlay .map-overlay-inner {
-      background-color: #000000;
+      background-color: rgba(0, 0, 0, 0.5);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.20);
       border-radius: 3px;
       padding: 10px;
@@ -63,7 +62,7 @@
     }
 
     .map-overlay h2 {
-      color:#fff;
+      color: #fff;
       line-height: 24px;
       display: block;
       margin: 0 0 10px;
@@ -86,13 +85,12 @@
   </style>
   <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.js'></script>
   <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.css' type='text/css' />
-<div class="introduction">
-   <h1>NYC Motor Vehicle Collisions In 2017</h1>
-   <br>
-   <p>This is a breakdown of every collision in NYC by location and injury.
-     Each record represents a collision in NYC by city, borough, precinct and cross street.
-   </p>
-</div>
+  <div class="introduction">
+    <h1>NYC Motor Vehicle Collisions In 2017</h1>
+    <br>
+    <p>This is a breakdown of every collision in NYC by location and injury. Each record represents a collision in NYC by city, borough, precinct and cross street.
+    </p>
+  </div>
 
 
 
@@ -139,7 +137,7 @@
       container: 'map', // you need this
       style: 'mapbox://styles/mapbox/dark-v9', // you also need this
       center: [-73.977725, 40.760219], // [long, lat] Different than leaflet, different than google maps, same as geojson!
-      zoom: 12
+      zoom: 11.5
     });
 
     var months = [
@@ -185,15 +183,15 @@
     ];
 
     function filterBy(time) {
-//filter by month
+      //filter by month
       // var filters = ['==', 'month', month];
       // map.setFilter('allcircles', filters);
       // document.getElementById('month').textContent = months[month];
 
-//filter by time
+      //filter by time
       var filters = ['==', 'time', time];
       map.setFilter('allcircles', filters);
-      document.getElementById('time').textContent = times[time]+":00";
+      document.getElementById('time').textContent = times[time] + ":00";
     }
 
 
@@ -211,19 +209,19 @@
         //   return d;}
 
 
-          //Create a time property value based on time
-          data.features = data.features.map(function(d) {
-            var time = d.properties.DATEF +" "+d.properties.TIME+":00";
-            var time1 = new Date(time).getHours();
-            d.properties.time = (time1);
-            // console.log(d.properties.time);
-            return d;
+        //Create a time property value based on time
+        data.features = data.features.map(function(d) {
+          var time = d.properties.DATEF + " " + d.properties.TIME + ":00";
+          var time1 = new Date(time).getHours();
+          d.properties.time = (time1);
+          // console.log(d.properties.time);
+          return d;
 
         });
 
 
 
-        // Add a GeoJSON source containing place coordinates and information.
+// Add a GeoJSON source containing place coordinates and information.
         map.addSource("dataname", {
           "type": "geojson",
           "data": data
@@ -235,38 +233,37 @@
           'source': 'dataname',
           'paint': {
             'circle-radius': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'NUMBER OF PERSONS INJURED'],
-                    0, 1.5,
-                    27, 40
-                ],
+              'interpolate', ['linear'],
+              ['get', 'NUMBER OF PERSONS INJURED'],
+              0, 1.5,
+              27, 40
+            ],
             'circle-color': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'NUMBER OF PERSONS INJURED'],
-                    0, '#ffeda0',
-                    10, '#e34a33'
-                ],
+              'interpolate', ['linear'],
+              ['get', 'NUMBER OF PERSONS INJURED'],
+              0, '#ffeda0',
+              10, '#e34a33'
+            ],
             'circle-opacity': [
-                    'interpolate',
-                    ['linear'],
-                    ['get', 'NUMBER OF PERSONS INJURED'],
-                    0, 0.5,
-                    3, 1
-                ]
+              'interpolate', ['linear'],
+              ['get', 'NUMBER OF PERSONS INJURED'],
+              0, 0.5,
+              3, 1
+            ]
           }
         });
 
+
+//filter by time
         filterBy(0);
 
         // document.getElementById('slider1').addEventListener('input', function(e) {
         //   var month = parseInt(e.target.value, 10);
         //   filterBy(month);
 
-          document.getElementById('slider2').addEventListener('input', function(e) {
-            var time = parseInt(e.target.value, 10);
-            filterBy(time);
+        document.getElementById('slider2').addEventListener('input', function(e) {
+          var time = parseInt(e.target.value, 10);
+          filterBy(time);
 
           //how many features shown in the layer
           var features = map.queryRenderedFeatures({
@@ -274,6 +271,50 @@
           });
           console.log(features.length);
         });
+
+//mouse hover layer
+        map.addLayer({
+          'id': 'allcircles-hover',
+          'type': 'circle',
+          'source': 'dataname',
+          'paint': {
+            'circle-radius': [
+              'interpolate', ['linear'],
+              ['get', 'NUMBER OF PERSONS INJURED'],
+              0, 1.5,
+              27, 40
+            ],
+            'circle-color': [
+              'interpolate', ['linear'],
+              ['get', 'NUMBER OF PERSONS INJURED'],
+              0, '#ffeda0',
+              10, '#e34a33'
+            ],
+            'circle-opacity': [
+              'interpolate', ['linear'],
+              ['get', 'NUMBER OF PERSONS INJURED'],
+              0, 0.5,
+              3, 1
+            ],
+            'circle-stroke-color': '#FF6666',
+            'circle-stroke-width': 4
+          },
+            'filter': ["==", "name", ""]
+        });
+
+//mouse hover effect
+        map.on("mousemove", "allcircles", function(e) {
+          map.getCanvas().style.cursor = 'pointer';
+          map.setFilter("allcircles-hover", ["==", "name", e.features[0].properties.name]);
+        });
+
+        // Reset the state-fills-hover layer's filter when the mouse leaves the layer.
+        map.on("mouseleave", "allcircles", function() {
+          map.getCanvas().style.cursor = '';
+          map.setFilter("allcircles-hover", ["==", "name", ""]);
+        });
+
+
       });
     });
   </script>
