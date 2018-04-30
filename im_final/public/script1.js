@@ -66,6 +66,12 @@ map.on('load', function() {
       "type": "geojson",
       "data": data
     });
+
+    map.addSource("dataStreet", {
+      "type": "geojson",
+      "data": "data_topstreets.json"
+    });
+
     overViewMapShow();
 
     //click overview button, show first map
@@ -311,8 +317,29 @@ function topinjuried() {
   map.on('click', 'topinjuried-hover', function(e) {
     console.log(e.features[0].geometry.coordinates[1]);
     $("#streetview").html('<iframe width="350" height="250" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/streetview?key=AIzaSyCfO-x1m39bSqszx42hs-UZKBG_pwoLP-0&location=' + e.features[0].geometry.coordinates[1] + ',' + e.features[0].geometry.coordinates[0] + '&heading=210&pitch=10&fov=35" allowfullscreen></iframe>');
-
   });
+}
 
-
+//topstreet show function
+function topstreet() {
+  map.addLayer({
+    'id': 'topstreet',
+    'type': 'circle',
+    'source': 'dataStreet',
+    'paint': {
+      'circle-radius': [
+        'interpolate', ['linear'],
+        ['get', 'number'],
+        20, 2,
+        90, 40
+      ],
+      'circle-color': [
+        'interpolate', ['linear'],
+        ['get', 'number'],
+        20, '#ffeda0',
+        90, '#e34a33'
+      ],
+      'circle-opacity': 0.7
+    }
+  });
 }
