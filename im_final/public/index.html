@@ -18,7 +18,9 @@
     }
 
     .introduction {
+      font-family: 'PT Sans Narrow', sans-serif;
       position: fixed;
+      text-align: center;
       z-index: 2;
       background-color: #fff;
       top: 0;
@@ -32,11 +34,38 @@
     }
 
     .small{
+      font-family: 'PT Sans Narrow', sans-serif;
       font-size: 12px;
       text-align: center;
       font-weight: bold;
     }
 
+  .button {
+  font-family: 'PT Sans Narrow', sans-serif;
+  font-size: 16px;
+  margin-left:auto;
+  margin-right:auto;
+	width: 200px;
+	height: 35px;
+  border: none;
+	position: relative;
+	background-color:#feb24c;
+  color: #ffffff;
+	border-radius: 50px;
+	overflow: hidden;
+	cursor: pointer;
+	z-index: 1;}
+
+	.button:hover {
+		background-color: #e34a33;
+	}
+
+  .footer {
+    font-family: 'PT Sans Narrow', sans-serif;
+    color: #9CA0AD;
+    font-size: 8px;
+    text-align: center;
+  }
 
   </style>
   <title>NYC Motor Vehicle Collisions In 2017</title>
@@ -44,7 +73,7 @@
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
   <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
   <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
-  <link href="https://fonts.googleapis.com/css?family=Chivo" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow" rel="stylesheet">
 </head>
 
 <body>
@@ -54,7 +83,8 @@
     /* time filter */
 
     .map-overlay {
-      font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+      font: 12px/20px, Arial, Helvetica, sans-serif;
+      font-family: 'PT Sans Narrow', sans-serif;
       color: #fff;
       position: absolute;
       width: 20%;
@@ -147,20 +177,43 @@
   <div class="introduction">
     <h1>NYC Motor Vehicle Collisions In 2017</h1>
     <p class="small">Data:
-      <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95/data">NYC Open Data</a>
+      <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95/data" target="_blank" >NYC Open Data</a>
       <br>
       Mapping/Code: Mengzhen Xiao
       <br>
       <br>
-      <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95/data">See The Documentation</a>
+      <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95/data" target="_blank" >See The Documentation</a>
     </p>
     <br>
     <p>This is a breakdown of every collision in NYC in 2017 by location and injury.
       Each record represents a collision.
     </p>
-    <button name="overview" id="overview">Overview</button>
-    <button name="topinjuried" id="topinjuried">Serious Accidents</button>
-    <button name="topstreet" id="topstreet">Accident-prone Streets</button>
+    <button name="overview" id="overview" class="button">Overview</button>
+    <br>
+    <br>
+    <p>In 2017, there were 30,023 collisions in NYC.
+      The most serious collision happened on May 18th, at the crossroad of 7 Avenue and West 42 Street,
+      which caused 1 person killed and 27 people injured.
+      (Click each circle to see Google Street View.)
+    </p>
+    <button name="topinjuried" id="topinjuried" class="button">Serious Accidents</button>
+    <br>
+    <br>
+    <p>To avoid future collisions, I highlight the locations where had more than 20 collisions in 2017.
+       The crossroad of 11 Avenue and West 40 Street had the most collisions, which was 86 collisions.
+       (The biggest circle on the map.)
+       As can be seen from the map, the accident-prone streets are mainly concentrated in 4 areas.
+       (Click each circle to see Google Street View.)
+    </p>
+    <button name="topstreet" id="topstreet" class="button">Accident-prone Streets</button>
+    <br>
+    <br>
+    <br>
+    <br>
+    <p class="footer">© Copyright 2018 Mengzhen Xiao</p>
+    <br>
+
+
   </div>
 
 
@@ -200,11 +253,6 @@
 
 <!-- top street map -->
 <div class='map-overlay top' id="map-overlay2">
-  <!-- <div class='map-overlay-inner'>
-    <h2>Collisions</h2>
-    <label id='number'></label>
-    <input id='slider3' type='range' min='20' max='90' step='10' value='0' />
-  </div> -->
   <div class='map-overlay-inner'>
     <div id='legend2' class='legend'>
       <h2>Number of Collisions</h2>
