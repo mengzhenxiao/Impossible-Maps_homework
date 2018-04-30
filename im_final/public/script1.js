@@ -66,15 +66,16 @@ map.on('load', function() {
       "type": "geojson",
       "data": data
     });
-    overViewMapShow()
+    overViewMapShow();
+
     //click overview button, show first map
     $("#overview").click(function() {
-      map.setLayoutProperty('topinjuried', 'visibility', 'none');
-      overViewMapShow();
+      location.reload();
     }); //overview button end
 
     $("#topinjuried").click(function() {
       $("#map-overlay").fadeOut();
+      $("#map-overlay1").fadeIn();
       map.setLayoutProperty('allcircles', 'visibility', 'none');
       topinjuried();
     }); //topinjuried button end
@@ -196,16 +197,7 @@ function topinjuried() {
         'circle-radius': [
           'interpolate', ['linear'],
           ['get', 'NUMBER_OF_PERSONS_INJURED'],
-          0, 0,
-          1, 0,
-          2, 0,
-          3, 0,
-          4, 0,
-          5, 0,
-          6, 0,
-          7, 0,
-          8, 0,
-          9, 10,
+          8, 10,
           10, 14,
           12, 16,
           13, 20,
@@ -214,16 +206,17 @@ function topinjuried() {
         'circle-color': [
           'interpolate', ['linear'],
           ['get', 'NUMBER_OF_PERSONS_INJURED'],
-          9, '#ffeda0',
+          8, '#ffeda0',
           27, '#e34a33'
         ],
         'circle-opacity': [
           'interpolate', ['linear'],
           ['get', 'NUMBER_OF_PERSONS_INJURED'],
-          9, 0.4,
+          8, 0.4,
           27, 0.7
         ]
-      }
+      },
+      'filter': [">=", "NUMBER_OF_PERSONS_INJURED", 8]
     });
 
     map.addLayer({
@@ -242,8 +235,8 @@ function topinjuried() {
           5, 0,
           6, 0,
           7, 0,
-          8, 0,
-          9, 10,
+          8, 10,
+          9, 12,
           10, 14,
           12, 16,
           13, 20,
@@ -252,10 +245,11 @@ function topinjuried() {
         'circle-color': [
           'interpolate', ['linear'],
           ['get', 'NUMBER_OF_PERSONS_INJURED'],
-          9, '#ffeda0',
+          8, '#ffeda0',
+          11, '#feb24c',
           27, '#e34a33'
         ],
-        'circle-opacity': 0.9,
+        'circle-opacity': 1,
         'circle-stroke-color': '#FF6666',
         'circle-stroke-width': 4
       },
@@ -263,10 +257,35 @@ function topinjuried() {
     });
 
 
+    map.addLayer({
+        'id': 'topinjuried-labels',
+        'type': 'symbol',
+        'source': 'dataname',
+        'layout': {
+            'text-field': ['concat', ['to-string', ['get', 'NUMBER_OF_PERSONS_INJURED']]],
+            'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+            'text-size': [
+              'interpolate', ['linear'],
+              ['get', 'NUMBER_OF_PERSONS_INJURED'],
+              8, 12,
+              27, 24
+            ]
+        },
+        'paint': {
+            'text-color': '#ffffff'
+        },
+        'filter': [">=", "NUMBER_OF_PERSONS_INJURED", 8]
+    });
+
     //mouse hover effect
     map.on("mousemove", "topinjuried", function(e) {
       map.getCanvas().style.cursor = 'pointer';
       map.setFilter("topinjuried-hover", ["==", "name", e.features[0].properties.name]);
+      $("#details4").html(e.features[0].properties.NUMBER_OF_PERSONS_INJURED + "  Injured");
+      $("#details5").html(e.features[0].properties.NUMBER_OF_PERSONS_KILLED + "  Killed");
+      $("#details6").html("<br><p>Time: " + e.features[0].properties.DATEF + "</p><p>On Street Name: " + e.features[0].properties.ON_STREET_NAME + "</p><p>Cross Street Name: " +
+        e.features[0].properties.CROSS_STREET_NAME + "</p><p>Off Street Name: " + e.features[0].properties.OFF_STREET_NAME);
+
 
     });
 
@@ -274,6 +293,9 @@ function topinjuried() {
     map.on("mouseleave", "topinjuried", function() {
       map.getCanvas().style.cursor = '';
       map.setFilter("topinjuried-hover", ["==", "name", ""]);
+      $("#details4").html("");
+      $("#details5").html("");
+      $("#details6").html("");
     });
 
 }
