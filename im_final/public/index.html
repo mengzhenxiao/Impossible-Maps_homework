@@ -30,6 +30,14 @@
       padding: 25px;
       color: #000;
     }
+
+    .small{
+      font-size: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+
   </style>
   <title>NYC Motor Vehicle Collisions In 2017</title>
   <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
@@ -131,13 +139,24 @@
       bottom: 0;
       right: 50px;
     }
+
+
   </style>
   <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.js'></script>
   <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.css' type='text/css' />
   <div class="introduction">
     <h1>NYC Motor Vehicle Collisions In 2017</h1>
+    <p class="small">Data:
+      <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95/data">NYC Open Data</a>
+      <br>
+      Mapping/Code: Mengzhen Xiao
+      <br>
+      <br>
+      <a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Motor-Vehicle-Collisions/h9gi-nx95/data">See The Documentation</a>
+    </p>
     <br>
-    <p>This is a breakdown of every collision in NYC by location and injury. Each record represents a collision in NYC by city, borough, precinct and cross street.
+    <p>This is a breakdown of every collision in NYC in 2017 by location and injury.
+      Each record represents a collision.
     </p>
     <button name="overview" id="overview">Overview</button>
     <button name="topinjuried" id="topinjuried">Serious Accidents</button>
