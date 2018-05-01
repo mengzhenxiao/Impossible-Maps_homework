@@ -171,6 +171,7 @@ function overViewMapShow() {
       layers: ['allcircles']
     });
     console.log(features.length);
+      // $("#numberofcollions").html();
   });
 
   //mouse hover layer
